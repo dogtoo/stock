@@ -15,13 +15,12 @@ collSt = db[stockName]
 runGroupSet = set(runGroupStr.split(","))
 
 #每日下午13:31分為止
-timestamp = 0
 localtime = time.localtime() # get struct_time
 today = time.strftime("%Y%m%d", localtime)
 
 localtime = int(time.mktime(localtime)) #系統時間
 strtime = int(time.mktime(time.strptime(today + ' 01:00:00', '%Y%m%d %H:%M:%S'))) # 9:00 起
-endtime = int(time.mktime(time.strptime(today + ' 05:30:00', '%Y%m%d %H:%M:%S'))) # 13:30 結束
+endtime = int(time.mktime(time.strptime(today + ' 05:32:00', '%Y%m%d %H:%M:%S'))) # 13:30 結束
 print("localtime:", localtime, ", Str time:", strtime, ", End time:", endtime, flush=True)
 
 #抓出所有群組
@@ -45,12 +44,15 @@ for st in qurySt:
         group[stockGroupCode]=stockCodeL
         print(stockCName + "(" + stockGroupCode + ")" + time.ctime(), flush=True)
 
-while localtime >= strtime and timestamp <= endtime:
-    print("***" + time.ctime() + "***", flush=True)
+while localtime >= strtime and localtime <= endtime:
     #查詢股票群組
+    print("***" + time.localtime() + "***", flush=True)
     for stockGroupCode,codeL in group.items():
         #取得股票即時資料
+        b = time.localtime()
         stock = twstock.realtime.get(codeL)
+        e = time.localtime()
+        print("    ", stockGroupCode, ":", e-b , flush=True)
         if stock["success"]:
             #轉換格式
             for code, v in stock.items():
@@ -65,9 +67,7 @@ while localtime >= strtime and timestamp <= endtime:
                     query = {"code":v['code'],"timestamp":v['timestamp']}
                     value = { "$set": v }
                     collRT.update_one(query, value, upsert=True)
-                    timestamp = int(v['timestamp'])
-    print("===" + time.ctime() + "===", flush=True)
-    print("timestamp = " + str(timestamp))
+    print("===" + time.localtime() + "===", flush=True)
 #print(time.ctime());
 """
 python3 stock.py TWSE 01,02,20
