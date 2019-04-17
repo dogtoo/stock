@@ -48,10 +48,10 @@ for st in qurySt:
         print(stockCName + "(" + stockGroupCode + ")" + " " + str(len(stockCodeL)), flush=True)
     """
 
-print("***" + time.ctime() + "***", flush=True)
+print("***" + time.ctime() + "*** (", len(stockCodeL), ")", flush=True)
 while (localtime >= strtime and localtime <= endtime) or debug == True:
     sleep = 5 #間隔5秒
-    b = int(time.mktime(time.localtime()))
+    b = time.time()
     stock = twstock.realtime.get(stockCodeL)
     if stock["success"]:
         #轉換格式
@@ -91,7 +91,8 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
     e = localtime
     print(stockGroupCode, ":", e-b, flush=True)
     """
-    e = int(time.mktime(time.localtime()))
+    e = time.time()
+    pritn("b = ", b, " e = ", e, " > ", e-b)
     sleep = sleep - (e-b) #間隔時間含有執行時間
     if e > 0:
         time.sleep(sleep)
