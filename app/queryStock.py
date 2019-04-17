@@ -24,10 +24,11 @@ coll = db["realtime"]
 query = {"code":"2330","accumulate_trade_volume":{"$gt":"18812"}}
 doc = coll.find(query)
 print(type(doc))
+"""
 for x in doc:
     print(type(x))
     print(x)
-
+"""
 
 coll = db["TWSE"]
 doc = coll.find({'groupCode':{'$regex':stockGroupCode}}, {"_id": 0, "code":1, "groupCode":1})
