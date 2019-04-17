@@ -4,7 +4,7 @@ import twstock
 import pymongo
 import time
 import sys
-
+debug = True
 stockName = sys.argv[1]
 runGroupStr = sys.argv[2]
 client = pymongo.MongoClient("mongodb://172.17.0.3:27017")
@@ -12,21 +12,24 @@ db = client["twStock"]
 db.authenticate("twstock", "twstock123")
 collRT = db["realtime"]
 collSt = db[stockName]
-runGroupSet = set(runGroupStr.split(","))
+#runGroupSet = set(runGroupStr.split(","))
 
 #每日下午13:31分為止
 localtime = time.localtime() # get struct_time
 today = time.strftime("%Y%m%d", localtime)
 
 localtime = int(time.mktime(localtime)) #系統時間
-strtime = int(time.mktime(time.strptime(today + ' 01:00:00', '%Y%m%d %H:%M:%S'))) # 9:00 起
+strtime = int(time.mktime(time.strptime(today + ' 00:50:00', '%Y%m%d %H:%M:%S'))) # 8:50 起
 endtime = int(time.mktime(time.strptime(today + ' 05:32:00', '%Y%m%d %H:%M:%S'))) # 13:30 結束
 print("localtime:", localtime, ", Str time:", strtime, ", End time:", endtime, flush=True)
 
-#抓出所有群組
 group = {}
-qurySt = collSt.find({}, {"_id": 0})
+stockCodeL = []
+qurySt = collSt.find({'groupCode':{'$regex':runGroupStr}}, {"_id": 0, "code":1, "groupCode":1})
 for st in qurySt:
+    stockCodeL.append(st['code']) #這次要查的股票們
+    group[st['code']] = st['groupCode'] #用股票號碼回頭找group
+    """
     #查詢股票群組
     for stockCName,codeL in st.items():
         stockCodeL = []
@@ -42,17 +45,34 @@ for st in qurySt:
         if stockGroupCode not in runGroupSet:
             continue
         group[stockGroupCode]=stockCodeL
-        print(stockCName + "(" + stockGroupCode + ")" + time.ctime(), flush=True)
+        print(stockCName + "(" + stockGroupCode + ")" + " " + str(len(stockCodeL)), flush=True)
+    """
 
-while localtime >= strtime and localtime <= endtime:
+print("***" + time.ctime() + "***", flush=True)
+while (localtime >= strtime and localtime <= endtime) or debug == True:
+    sleep = 5 #間隔5秒
+    b = int(time.mktime(time.localtime()))
+    stock = twstock.realtime.get(stockCodeL)
+    if stock["success"]:
+        #轉換格式
+        for code, v in stock.items():
+            if isinstance(v, dict):
+                del v['info']
+                rlTime = v['realtime']
+                del v['realtime']
+                v.update(rlTime)
+                v.update({'group':group[v['code']][0:2]})
+                #存入db
+                #collRT.insert_one(v)
+                query = {"code":v['code'],"timestamp":v['timestamp'],"accumulate_trade_volume":{"$gt":v['accumulate_trade_volume']}}
+                value = { "$set": v }
+                collRT.update_one(query, value, upsert=True)
+    """
     #查詢股票群組
-    print("***" + time.localtime() + "***", flush=True)
     for stockGroupCode,codeL in group.items():
         #取得股票即時資料
-        b = time.localtime()
+        b = int(time.mktime(time.localtime()))
         stock = twstock.realtime.get(codeL)
-        e = time.localtime()
-        print("    ", stockGroupCode, ":", e-b , flush=True)
         if stock["success"]:
             #轉換格式
             for code, v in stock.items():
@@ -64,10 +84,18 @@ while localtime >= strtime and localtime <= endtime:
                     v.update({'group':stockGroupCode})
                     #存入db
                     #collRT.insert_one(v)
-                    query = {"code":v['code'],"timestamp":v['timestamp'],"accumulate_trade_volume":{"&gt":v['accumulate_trade_volume']}}
+                    query = {"code":v['code'],"timestamp":v['timestamp']}
                     value = { "$set": v }
                     collRT.update_one(query, value, upsert=True)
-    print("===" + time.localtime() + "===", flush=True)
+    localtime = int(time.mktime(time.localtime()))
+    e = localtime
+    print(stockGroupCode, ":", e-b, flush=True)
+    """
+    e = int(time.mktime(time.localtime()))
+    sleep = sleep - (e-b) #間隔時間含有執行時間
+    if e > 0:
+        time.sleep(sleep)
+    print("===" + time.ctime() + "===", flush=True)
 #print(time.ctime());
 """
 python3 stock.py TWSE 01,02,20
