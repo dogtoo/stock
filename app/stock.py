@@ -92,7 +92,7 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
     print(stockGroupCode, ":", e-b, flush=True)
     """
     e = time.time()
-    pritn("b = ", b, " e = ", e, " > ", e-b)
+    print("b = ", b, " e = ", e, " > ", e-b)
     sleep = sleep - (e-b) #間隔時間含有執行時間
     if e > 0:
         time.sleep(sleep)
