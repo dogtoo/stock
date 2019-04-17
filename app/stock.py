@@ -64,7 +64,7 @@ while localtime >= strtime and localtime <= endtime:
                     v.update({'group':stockGroupCode})
                     #存入db
                     #collRT.insert_one(v)
-                    query = {"code":v['code'],"timestamp":v['timestamp']}
+                    query = {"code":v['code'],"timestamp":v['timestamp'],"accumulate_trade_volume":{"&gt":v['accumulate_trade_volume']}}
                     value = { "$set": v }
                     collRT.update_one(query, value, upsert=True)
     print("===" + time.localtime() + "===", flush=True)

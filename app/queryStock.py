@@ -21,7 +21,7 @@ t = (2018, 12, 28, 8, 44, 4, 4, 362, 0)
 
 
 coll = db["realtime"]
-query = {"code":"2330","timestamp":{"&gt":1555467468.0}}
+query = {"code":"2330","accumulate_trade_volume":{"&gt":18812}}
 doc = coll.find(query)
 print(type(doc))
 for x in doc:
