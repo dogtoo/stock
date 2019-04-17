@@ -65,11 +65,11 @@ for x in doc:
 """
     #for code,data in x.items():
     #    pprint.pprint(data)
-    """
-    if k == '¥b¾ÉÅé·~':
+"""
+    if k == 'åŠå°é«”æ¥­':
         print(len(data))
         t = len(data)
         spl = 5
         for code,v in data.items():
             pprint.pprint(code)
-    """
+"""
