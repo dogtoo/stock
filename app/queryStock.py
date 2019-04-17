@@ -28,10 +28,10 @@ for x in doc:
     print(type(x))
     print(x)
 
-"""
+
 coll = db["TWSE"]
 doc = coll.find({'groupCode':{'$regex':stockGroupCode}}, {"_id": 0, "code":1, "groupCode":1})
-"""
+
 """
 match = {
         'groupCode': '24'
@@ -50,20 +50,19 @@ doc = coll.aggregate(
 t=0
 s=15
 i=1
-"""
+
 for x in doc:
     t = t + 1
-    print(x['code'])
-    print(x['groupCode']+"_"+str(i))
+    print(x['code'], ":", x['groupCode']+"_"+str(i))
     query = {"code":x['code']}
-    value = { "$set": {'groupCode': x['groupCode']+"_"+str(i)} }
-    coll.update_one(query, value, upsert=True)
+    #value = { "$set": {'groupCode': x['groupCode']+"_"+str(i)} }
+    #coll.update_one(query, value, upsert=True)
 
     if t == s:
         t = 0
         i = i + 1
-"""
-    #for code,data in x.items():
+
+        #for code,data in x.items():
     #    pprint.pprint(data)
 """
     if k == '半導體業':

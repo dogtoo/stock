@@ -4,7 +4,7 @@ import twstock
 import pymongo
 import time
 import sys
-debug = True
+debug = False
 stockName = sys.argv[1]
 runGroupStr = sys.argv[2]
 client = pymongo.MongoClient("mongodb://172.17.0.3:27017")
@@ -64,7 +64,8 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
                 v.update({'group':group[v['code']][0:2]})
                 #存入db
                 #collRT.insert_one(v)
-                query = {"code":v['code'],"timestamp":v['timestamp'],"accumulate_trade_volume":{"$gt":v['accumulate_trade_volume']}}
+                #新的訊息有可能沒有交易，新增一筆的方式是要張數有增加
+                query = {"code":v['code'],"date":v['date'],"accumulate_trade_volume":{"$gt":v['accumulate_trade_volume']}}
                 value = { "$set": v }
                 collRT.update_one(query, value, upsert=True)
     """
