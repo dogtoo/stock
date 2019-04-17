@@ -92,11 +92,10 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
     print(stockGroupCode, ":", e-b, flush=True)
     """
     e = time.time()
-    print("b = ", b, " e = ", e, " > ", e-b)
     sleep = sleep - (e-b) #間隔時間含有執行時間
-    if e > 0:
+    if sleep > 0:
         time.sleep(sleep)
-    print("===" + time.ctime() + "===", flush=True)
+    print("===" + time.ctime() + "===", e-b, flush=True)
 #print(time.ctime());
 """
 python3 stock.py TWSE 01,02,20
