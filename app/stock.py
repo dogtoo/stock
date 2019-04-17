@@ -27,6 +27,8 @@ group = {}
 stockCodeL = []
 qurySt = collSt.find({'groupCode':{'$regex':runGroupStr}}, {"_id": 0, "code":1, "groupCode":1})
 for st in qurySt:
+    if st['groupCode'] == '00':
+        continue
     stockCodeL.append(st['code']) #這次要查的股票們
     group[st['code']] = st['groupCode'] #用股票號碼回頭找group
     """
