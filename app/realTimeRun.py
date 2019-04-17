@@ -1,5 +1,5 @@
 import pymongo
-import so
+import os
 cmd = 'ps -ef '
 textlist = os.popen(cmd).readlines()
 for line in textlist:
