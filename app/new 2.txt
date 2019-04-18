@@ -35,3 +35,7 @@ db.realtime.find({'date':"20190417",'time': '13:30:00'},{'accumulate_trade_volum
 db.realtime.find({'code':'2330','date':'20190417'},{_id:0,final_time:1,time:1,trade_volume:1,accumulate_trade_volume:1,final_trade_volume:1}).sort({'accumulate_trade_volume':-1})
 
 db.realtime.find({'date':'20190417','final_time':'14:30:00'},{_id:0,code:1,accumulate_trade_volume:1}).sort({accumulate_trade_volume:-1 })
+
+ db.realtime.find({'code':'2330','date':'20190418'},
+ {'_id':0,'time':1,'trade_volume':1,'accumulate_trade_volume':1,'best_bid_price':{$slice:1},'best_ask_price':{$slice:1},'latest_trade_price':1}
+ ).sort({'final_time':-1})
