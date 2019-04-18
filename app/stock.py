@@ -4,7 +4,7 @@ import twstock
 import pymongo
 import time
 import sys
-debug = False
+debug = False 
 stockName = sys.argv[1]
 runGroupStr = sys.argv[2]
 client = pymongo.MongoClient("mongodb://172.17.0.3:27017")
