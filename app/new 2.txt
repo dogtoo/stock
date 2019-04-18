@@ -26,12 +26,55 @@ python3 stock.py TWSE 23,16,17
 "03|21|12|04|18|14|28|05|22|06|08|09|10|11|15|25|31|27|26|29|39|23|16|17"
 
 
-db.realtime.find({'date':"20190417",'time': '13:30:00'},{'accumulate_trade_volume':1}).forEach(function(x){
-        if x.accumulate_trade_volume == null
-            x.accumulate_trade_volume = 0
+db.realtime.find({'date':"20190417",'trade_volume':{$type:2}},{}).forEach(function(x){
+        if (x.accumulate_trade_volume == null)
+            x.accumulate_trade_volume = 0;
         x.accumulate_trade_volume = new NumberInt(x.accumulate_trade_volume);
-        db.realtime.save(x);})
+        if (x.final_trade_volume == null)
+            x.final_trade_volume = 0;
+        x.final_trade_volume = new NumberInt(x.final_trade_volume);
         
-db.realtime.find({'code':'2330','date':'20190417'},{_id:0,final_time:1,time:1,trade_volume:1,accumulate_trade_volume:1,final_trade_volume:1}).sort({'accumulate_trade_volume':-1})
+        x.high = parseFloat(x.high);
+        x.low = parseFloat(x.low);
+        x.open = parseFloat(x.open);
+        x.latest_trade_price = parseFloat(x.latest_trade_price);
+        x.trade_volume = new NumberInt(x.trade_volume);
+        
+        if (x.best_ask_price != null) {
+            x.best_ask_price[0] = parseFloat(x.best_ask_price[0]);
+            x.best_ask_price[1] = parseFloat(x.best_ask_price[1]);
+            x.best_ask_price[2] = parseFloat(x.best_ask_price[2]);
+            x.best_ask_price[3] = parseFloat(x.best_ask_price[3]);
+            x.best_ask_price[4] = parseFloat(x.best_ask_price[4]);
+        }
+        if (x.best_ask_volume != null) {
+            x.best_ask_volume[0] = parseFloat(x.best_ask_volume[0]);
+            x.best_ask_volume[1] = parseFloat(x.best_ask_volume[1]);
+            x.best_ask_volume[2] = parseFloat(x.best_ask_volume[2]);
+            x.best_ask_volume[3] = parseFloat(x.best_ask_volume[3]);
+            x.best_ask_volume[4] = parseFloat(x.best_ask_volume[4]);
+        }
+
+        if (x.best_bid_price != null) {
+            x.best_bid_price[0] =  parseFloat(x.best_bid_price[0]);
+            x.best_bid_price[1] =  parseFloat(x.best_bid_price[1]);
+            x.best_bid_price[2] =  parseFloat(x.best_bid_price[2]);
+            x.best_bid_price[3] =  parseFloat(x.best_bid_price[3]);
+            x.best_bid_price[4] =  parseFloat(x.best_bid_price[4]);
+        }
+
+        if (x.best_bid_volume != null) {
+            x.best_bid_volume[0] = parseFloat(x.best_bid_volume[0]);
+            x.best_bid_volume[1] = parseFloat(x.best_bid_volume[1]);
+            x.best_bid_volume[2] = parseFloat(x.best_bid_volume[2]);
+            x.best_bid_volume[3] = parseFloat(x.best_bid_volume[3]);
+            x.best_bid_volume[4] = parseFloat(x.best_bid_volume[4]);
+        }
+        db.realtime.save(x);
+})
+
+
+        
+db.realtime.find({'code':'2330','date':'20190418'},{_id:0,final_time:1,time:1,trade_volume:1,accumulate_trade_volume:1,final_trade_volume:1}).sort({'accumulate_trade_volume':-1})
 
 db.realtime.find({'date':'20190417','final_time':'14:30:00'},{_id:0,code:1,accumulate_trade_volume:1}).sort({accumulate_trade_volume:-1 })
