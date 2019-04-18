@@ -90,10 +90,11 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
                     query = {"code":v['code'],"timestamp":v['timestamp']}
                     value = { "$set": v }
                     collRT.update_one(query, value, upsert=True)
-    localtime = int(time.mktime(time.localtime()))
     e = localtime
     print(stockGroupCode, ":", e-b, flush=True)
     """
+    
+    localtime = int(time.mktime(time.localtime()))
     e = time.time()
     sleep = sleep - (e-b) #間隔時間含有執行時間
     if sleep > 0:
