@@ -23,7 +23,7 @@ python3 stock.py TWSE 31,27
 python3 stock.py TWSE 26,29,39
 python3 stock.py TWSE 23,16,17
 
-"03|21|12|04|18|14|28|05|22|06|08|09|10|11|15|25|31|27|26|29|39|23|16|17"
+"03|21|12|04|18|14|28|05|22|06|08|09|10|11|15|25|24|31|27|26|29|39|23|16|17"
 
 
 db.realtime.find({'date':"20190416",'trade_volume':{$type:2}},{}).forEach(function(x){
