@@ -7,6 +7,9 @@ import sys
 debug = False 
 stockName = sys.argv[1]
 runGroupStr = sys.argv[2]
+if len(runGroupStr) == 0:
+    debug = True
+    runGroupStr = "01|02|20|03|21|12|04|18|14|28"
 client = pymongo.MongoClient("mongodb://172.17.0.3:27017")
 db = client["twStock"]
 db.authenticate("twstock", "twstock123")
@@ -55,10 +58,11 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
     sleep = 5 #間隔5秒
     b = time.time()
     stock = twstock.realtime.get(stockCodeL)
+    print(runGroupStr,stock["success"])
     if stock["success"]:
         #轉換格式
         for code, v in stock.items():
-            if isinstance(v, dict):
+            if isinstance(v, dict) and v['success']:
                 del v['info']
                 rlTime = v['realtime']
                 del v['realtime']
@@ -67,9 +71,12 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
                 #存入db
                 #collRT.insert_one(v)
                 #新的訊息有可能沒有交易，新增一筆的方式是要張數有增加
-                query = {"code":v['code'],"date":v['date'],"accumulate_trade_volume":{"$ge":v['accumulate_trade_volume']}}
+                query = {"code":v['code'],"date":v['date'],"accumulate_trade_volume":{"$gte":v['accumulate_trade_volume']}}
                 value = { "$set": v }
-                collRT.update_one(query, value, upsert=True)
+                if "final_trade_volume" not in v:
+                    collRT.update_one(query, value, upsert=True)
+                else:
+                    collRT.insert_one(v)
     """
     #查詢股票群組
     for stockGroupCode,codeL in group.items():
@@ -115,3 +122,4 @@ python3 stock.py TWSE 31,27
 python3 stock.py TWSE 26,29,39
 python3 stock.py TWSE 23,16,17
 """
+
