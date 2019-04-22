@@ -16,7 +16,7 @@ print(p[0])
 stop = len(stockList)
 
 while stop > 0:
-    for i in len(stockList)
+    for i in range(len(stockList)):
         print("code(",p[i].pid,")=",p[i].returncode)
         p[i].poll()
         if p[i].returncode == 0:
