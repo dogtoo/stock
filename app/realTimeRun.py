@@ -2,41 +2,31 @@
 import pymongo
 import subprocess
 import time
-cmd_1 = 'python3 stock.py TWSE "24_1"'
-cmd_2 = 'python3 stock.py TWSE "24_2"'
-#cmd_3 = 'python3 stock.py TWSE "24_5"'
-p = {}
-p["0"] = subprocess.Popen(cmd_1, shell=True)
-p["1"] = subprocess.Popen(cmd_2, shell=True)
-#p["2"] = subprocess.Popen(cmd_3, shell=True)
-print(p["0"])
-stop = 2 
-#p["0"].wait()
-while stop > 0:
-    print("code(",p["0"].pid,")=",p["0"].returncode)
-    print("code(",p["1"].pid,")=",p["1"].returncode)
-#    print("code(",p["2"].pid,")=",p["2"].returncode)
-    time.sleep(10)
-    p["0"].poll()
-    p["1"].poll()
-#    p["2"].poll()
-    if p["0"].returncode == 0:
-        stop = stop - 1
-        p["0"].kill
-    elif p["0"].returncode == None:
-        p["0"].poll()
-    elif p["0"].returncode != 0:
-        p["0"].kill
-        p["0"] = subprocess.Popen(cmd_1, shell=True) 
 
-    if p["1"].returncode == 0:
-        stop = stop - 1
-        p["1"].kill
-    elif p["1"].returncode == None:
-        p["1"].poll()
-    elif p["1"].returncode != 0:
-        p["1"].kill
-        p["1"] = subprocess.Popen(cmd_2, shell=True)
-#    if p["2"].returncode == 0:
-#        stop = stop - 1
+stockList = ["01|02|20|03","21|12|04|18","14|28|05|22","06|08|09|10","11|15|25|24","31|27|26|29","39|23|16|17","00"]
+
+cmd = 'python3 stock.py TWSE "{}"'
+
+def runCom(L):
+    return subprocess.Popen(cmd.format(L), shell=True)
+
+p = list( map(runCom, stockList)) 
+
+print(p[0])
+stop = len(stockList)
+
+while stop > 0:
+    for i in len(stockList)
+        print("code(",p[i].pid,")=",p[i].returncode)
+        p[i].poll()
+        if p[i].returncode == 0:
+            stop = stop - 1
+            p[i].kill
+        elif p[i].returncode == None:
+            p[i].poll()
+        elif p[i].returncode != 0:
+            p[i].kill
+            p[i] = subprocess.Popen(cmd_1, shell=True)
+            
+    time.sleep(10)
     print(stop)
