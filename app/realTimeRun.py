@@ -3,7 +3,7 @@ import pymongo
 import subprocess
 import time
 
-stockList = ["01|02|20|03","21|12|04|18","14|28|05|22","06|08|09|10","11|15|25|24","31|27|26|29","39|23|16|17","00"]
+stockList = ["01|02","20","03","21","12","04|18|14","28","05|22","06|08|09","10|11|15","25|24","31|27","26|29","39|23|16|17","00"]
 
 cmd = 'python3 stock.py TWSE "{}"'
 
@@ -12,12 +12,11 @@ def runCom(L):
 
 p = list( map(runCom, stockList)) 
 
-print(p[0])
 stop = len(stockList)
 
 while stop > 0:
     for i in range(len(stockList)):
-        print("code(",p[i].pid,")=",p[i].returncode)
+        print(i," code(",p[i].pid,")=",p[i].returncode)
         p[i].poll()
         if p[i].returncode == 0:
             stop = stop - 1

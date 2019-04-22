@@ -58,7 +58,7 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
     sleep = 5 #間隔5秒
     b = time.time()
     stock = twstock.realtime.get(stockCodeL)
-    print(stock["success"])
+    print(runGroupStr,stock["success"])
     if stock["success"]:
         #轉換格式
         for code, v in stock.items():
