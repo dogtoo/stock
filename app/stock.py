@@ -71,7 +71,7 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
                 #存入db
                 #collRT.insert_one(v)
                 #新的訊息有可能沒有交易，新增一筆的方式是要張數有增加
-                query = {"code":v['code'],"date":v['date'],"accumulate_trade_volume":{"$gte":v['accumulate_trade_volume']},"final_trade_volume":{"$gt":0}}
+                query = {$or:[{"code":v['code'],"date":v['date'],"accumulate_trade_volume":{"$gte":v['accumulate_trade_volume']}},{"final_trade_volume":{"$gt":0}}]}
                 value = { "$set": v }
                 collRT.update_one(query, value, upsert=True)
     """
