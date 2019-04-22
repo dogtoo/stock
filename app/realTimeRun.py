@@ -10,7 +10,7 @@ p["0"] = subprocess.Popen(cmd_1, shell=True)
 p["1"] = subprocess.Popen(cmd_2, shell=True)
 #p["2"] = subprocess.Popen(cmd_3, shell=True)
 print(p["0"])
-stop = 22 
+stop = 2 
 #p["0"].wait()
 while stop > 0:
     print("code(",p["0"].pid,")=",p["0"].returncode)
