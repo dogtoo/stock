@@ -9,7 +9,7 @@ stockName = sys.argv[1]
 runGroupStr = sys.argv[2]
 if len(runGroupStr) == 0:
     debug = True
-    runGroupStr = "01|02|20|03|21|12|04|18|14|28"
+    runGroupStr = "24" 
 client = pymongo.MongoClient("mongodb://172.17.0.3:27017")
 db = client["twStock"]
 db.authenticate("twstock", "twstock123")
@@ -24,6 +24,7 @@ today = time.strftime("%Y%m%d", localtime)
 localtime = int(time.mktime(localtime)) #系統時間
 strtime = int(time.mktime(time.strptime(today + ' 00:50:00', '%Y%m%d %H:%M:%S'))) # 8:50 起
 endtime = int(time.mktime(time.strptime(today + ' 05:32:00', '%Y%m%d %H:%M:%S'))) # 13:30 結束
+twoEndtime = int(time.mktime(time.strptime(today + ' 06:32:00', '%Y%m%d %H:%M:%S'))) # 14:30 
 print("localtime:", localtime, ", Str time:", strtime, ", End time:", endtime, flush=True)
 
 group = {}
@@ -54,7 +55,7 @@ for st in qurySt:
     """
 
 print("***" + time.ctime() + "*** (", len(stockCodeL), ")", flush=True)
-while (localtime >= strtime and localtime <= endtime) or debug == True:
+while (localtime >= strtime and localtime <= endtime) or debug == True or (localtime > endtime and localtime <= twoEndtime):
     sleep = 5 #間隔5秒
     b = time.time()
     stock = twstock.realtime.get(stockCodeL)
@@ -76,7 +77,9 @@ while (localtime >= strtime and localtime <= endtime) or debug == True:
                 if "final_trade_volume" not in v:
                     collRT.update_one(query, value, upsert=True)
                 else:
-                    collRT.insert_one(v)
+                    query = {"code":v['code'],"date":v['date'],"final_trade_volume":v['final_trade_volume']}
+                    value = {"$set":v}
+                    collRT.update_one(query, value, upsert=True)
     """
     #查詢股票群組
     for stockGroupCode,codeL in group.items():
