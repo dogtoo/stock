@@ -76,8 +76,6 @@ while stop > 0:
 
     time.sleep(60)
     logging.info(stop)
-    """
-    if stop == 0:
-        for i in range(len(stockList)):
-            fp[i].close()
-    """
+
+for i in range(len(stockList)):
+    p[i].close()

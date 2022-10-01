@@ -20,7 +20,6 @@ if len(sys.argv) == 3:
     runGroupStr = sys.argv[2]
 
 if len(runGroupStr) == 0:
-    debug = True
     runGroupStr = "24"
 
 config = configparser.ConfigParser()
@@ -28,6 +27,7 @@ config.read('config.ini')
 
 if config['stock']['logginglevel'] == 'DEBUG':
     level = logging.DEBUG
+    debug = True
 elif config['stock']['logginglevel'] == 'INFO':
     level = logging.INFO
 elif config['stock']['logginglevel'] == 'ERROR':
@@ -193,10 +193,9 @@ def chkRun(runcnt):
     secETime = int('{:%d}'.format(datetime.now()) + '1510')
     logging.debug("sysTime = " + str(sysTime) + ", strTime = " + str(strTime) + ", endTime = " +
                   str(endTime) + ", secBTime = " + str(secBTime) + ", secETime = " + str(secETime))
-    if runcnt == 0 and debug:
+    if debug:
+        logging.debug("is debug mode")
         return True
-    elif runcnt == 1 and debug:
-        return False
     elif sysTime > strTime and sysTime < endTime:
         return True
     elif sysTime > secBTime and sysTime < secETime:
@@ -212,7 +211,7 @@ logging.info(" gropuCode = " + runGroupStr +
 run = True
 run = chkRun(0)
 # while (localtime >= strtime and localtime <= endtime) or debug == True or (localtime > endtime and localtime <= twoEndtime):
-getSession = True
+
 proxidx = 0
 proxies = {}
 
@@ -225,25 +224,34 @@ class SSLContextAdapter(HTTPAdapter):
         return super(SSLContextAdapter, self).init_poolmanager(*args, **kwargs)
 
 
-while getSession:
-    try:
-        if runGroupStr != '01':
-            proxies = {"http": random.sample(proxList, k=1)[0]}
-        else:
-            proxies = {}
-        req = requests.Session()
-        adapter = SSLContextAdapter()
-        req.mount(SESSION_URL, adapter)
-        req.get(SESSION_URL, proxies=proxies, timeout=(5, 5), verify=True)
-        getSession = False
-    except BaseException as e:
-        logging.error("get Session Exception :" + str(e))
-        # time.sleep(10)
+req = requests.Session()
+
+
+def getNewSession():
+    getSession = True
+    while getSession:
         if not chkRun(0):
             sys.exit(0)
+        try:
+            if runGroupStr != '01':
+                proxies = {"http": random.sample(proxList, k=1)[0]}
+            else:
+                proxies = {}
+            adapter = SSLContextAdapter()
+            req.mount(SESSION_URL, adapter)
+            req.get(SESSION_URL, proxies=proxies, timeout=(5, 5), verify=True)
+            getSession = False
+            logging.info("get New Session")
+        except BaseException as e:
+            logging.error("get Session Exception :" + str(e))
+            if not chkRun(0):
+                sys.exit(0)
+            time.sleep(10 * 60)
 
+
+getNewSession()
 while run:
-    sleep = 60  # 間隔5秒
+    sleep = 30  # 間隔30秒
     b = time.time()
     stock = twstock.realtime.get(stockCodeL, req, proxies, logging)
     # print(runGroupStr,stock["success"])
@@ -288,7 +296,8 @@ while run:
                 except BaseException as e:
                     logging.error("    BaseException :" + str(e))
     else:
-        logging.error("    error" + stock['rtmessage'])
+        logging.error("    realtime error: " + stock['rtmessage'])
+        getNewSession()
         proxies = {"http": random.sample(proxList, k=1)[0]}
     """
     #查詢股票群組
@@ -313,7 +322,7 @@ while run:
     e = localtime
     print(stockGroupCode, ":", e-b, flush=True)
     """
-    run = chkRun(1)
+    run = chkRun(0)
 
     #localtime = int(time.mktime(time.localtime()))
     e = time.time()
