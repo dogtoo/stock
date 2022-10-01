@@ -19,7 +19,7 @@ elif config['stock']['logginglevel'] == 'ERROR':
     level = logging.ERROR
 
 logging.basicConfig(level=level,
-                    format='%(asctime)s - %(levelname)s : %(message)s',
+                    format='%(asctime)s - %(levelname)s : %(funcName)s %(lineno)d : %(message)s',
                     datefmt='%Y-%m-%dT %H:%M:%S',
                     filename=config['stock']['logfilelink'] + 't86_{:%Y-%m-%d}.log'.format(datetime.now()))
 

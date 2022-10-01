@@ -17,8 +17,8 @@ elif config['stock']['logginglevel'] == 'INFO':
 elif config['stock']['logginglevel'] == 'ERROR':
     level = logging.ERROR
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s : %(message)s',
+logging.basicConfig(level=level,
+                    format='%(asctime)s - %(levelname)s : %(funcName)s %(lineno)d : %(message)s',
                     datefmt='%Y-%m-%dT %H:%M:%S',
                     filename=config['stock']['logfilelink'] + 'realTime_{:%Y-%m-%d}.log'.format(datetime.now()))
 # filename='/python/log/realTime_{:%Y-%m-%d}.log'.format(datetime.now()))
