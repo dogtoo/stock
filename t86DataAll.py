@@ -145,7 +145,8 @@ runProxy = {}
 errorProxy = {}
 emptyData = False
 
-logging.info("============" + bDate + ", " + eDate + "============")
+logging.info("============" + type + ", " +
+             bDate + ", " + eDate + "============")
 try:
     for date in datelist:
         if type == 't86' and int(date) < 20120501 and date[-2:] != '01':
