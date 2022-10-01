@@ -183,6 +183,7 @@ try:
 
             if 'data' in r:
                 data = r['data']
+                logging.info("download data cnt :%s", len(data))
                 for h in data:
                     query = {"code": h['code'], "date": h['date']}
                     gcode = collRT.find_one({'code': h['code']})
@@ -194,7 +195,7 @@ try:
                     collT86.update_one(query, value, upsert=True)
                 cnt = 21
                 proxidx = (proxidx + 1) % len(proxList)
-                logging.info("    t86 get sleep 5")
+                logging.debug("    t86 get sleep 5")
             elif 'rtcode' in r and r['rtcode'] == -1:
                 cnt = 21
                 #logging.error("date: " + date)
@@ -224,7 +225,7 @@ try:
         time.sleep(1)
 
     for p in [v for v in sorted(errorProxy.items(), key=lambda d: d[1])]:
-        logging.info(str(p) + ", run = " + str(runProxy[p[0]]))
+        logging.debug(str(p) + ", run = " + str(runProxy[p[0]]))
     #[(k,di[k]) for k in sorted(di.keys())]
     #[ v for v in sorted(di.values())]
     #sorted(d.items(), lambda x, y: cmp(x[1], y[1])),
