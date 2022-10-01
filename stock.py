@@ -37,7 +37,7 @@ SESSION_URL = 'https://mis.twse.com.tw'
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s - %(levelname)s : %(message)s',
                     datefmt='%Y-%m-%dT %H:%M:%S',
-                    filename='../../log/' + stockName + '_' + '{:%Y-%m-%d}'.format(datetime.now()) + '_' + '{}.log'.format(runGroupStr.replace("|", "_")))
+                    filename=config['stock']['logfilelink'] + stockName + '_' + '{:%Y-%m-%d}'.format(datetime.now()) + '_' + '{}.log'.format(runGroupStr.replace("|", "_")))
 # filename='/python/log/' + stockName + '_' + '{:%Y-%m-%d}'.format(datetime.now()) + '_' + '{}.log'.format(runGroupStr.replace("|","_")) )
 
 client = pymongo.MongoClient(
@@ -248,7 +248,7 @@ while run:
     stock = twstock.realtime.get(stockCodeL, req, proxies, logging)
     # print(runGroupStr,stock["success"])
     if stock["success"]:
-        logging.info("    success")
+        logging.debug("    success")
         # 轉換格式
         logcnt = 0
         for code, v in stock.items():

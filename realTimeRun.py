@@ -20,7 +20,7 @@ elif config['stock']['logginglevel'] == 'ERROR':
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s : %(message)s',
                     datefmt='%Y-%m-%dT %H:%M:%S',
-                    filename='../../log/realTime_{:%Y-%m-%d}.log'.format(datetime.now()))
+                    filename=config['stock']['logfilelink'] + 'realTime_{:%Y-%m-%d}.log'.format(datetime.now()))
 # filename='/python/log/realTime_{:%Y-%m-%d}.log'.format(datetime.now()))
 
 stockList = ["01", "02", "03", "04", "05", "06", "08", "09", "10", "11", "12", "14", "15",
@@ -51,8 +51,8 @@ def runComTPEX(L):
 p.extend(list(map(runComTPEX, stockListTPEX)))
 
 
-def logW(L):
-    return open("/python/log/stock{}.log".format(L.replace("|", "_"), "a+"))
+# def logW(L):
+#     return open("/python/log/stock{}.log".format(L.replace("|", "_"), "a+"))
 #fp = list( map(logW, stockList))
 
 
