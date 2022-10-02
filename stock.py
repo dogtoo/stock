@@ -16,14 +16,20 @@ random.seed('dogtoo')
 debug = False
 stockName = sys.argv[1]
 runGroupStr = ""
-if len(sys.argv) == 3:
-    runGroupStr = sys.argv[2]
-
+runGroupStr = sys.argv[2]
 if len(runGroupStr) == 0:
     runGroupStr = "24"
 
+sname = "TW"
+if stockName == 'TPEX':
+    sname = "TP"
+
+sname = sname + runGroupStr
+
 config = configparser.ConfigParser()
 config.read('config.ini')
+statics = configparser.ConfigParser()
+statics.read('statics.ini')
 
 if config['stock']['logginglevel'] == 'DEBUG':
     level = logging.DEBUG
@@ -39,6 +45,7 @@ logging.basicConfig(level=level,
                     datefmt='%Y-%m-%dT %H:%M:%S',
                     filename=config['stock']['logfilelink'] + '{:%Y-%m-%d}'.format(datetime.now()) + '/' + stockName + '_' + '{}.log'.format(runGroupStr.replace("|", "_")))
 # filename='/python/log/' + stockName + '_' + '{:%Y-%m-%d}'.format(datetime.now()) + '_' + '{}.log'.format(runGroupStr.replace("|","_")) )
+
 
 client = pymongo.MongoClient(
     host=config['stock']['dbConn'],
@@ -201,6 +208,7 @@ def chkRun(runcnt):
     elif sysTime > secBTime and sysTime < secETime:
         return True
     else:
+        logging.info("STOP")
         return False
 
 
@@ -227,6 +235,16 @@ class SSLContextAdapter(HTTPAdapter):
 req = requests.Session()
 
 
+def lookStop():
+    statics.read('statics.ini')
+    if statics['static']['enabled'] == 'True':
+        return False
+    else:
+        logging.info("STOP")
+        statics.set(stockName, sname, "STOP")
+        sys.exit(0)
+
+
 def getNewSession():
     getSession = True
     while getSession:
@@ -242,22 +260,29 @@ def getNewSession():
             req.get(SESSION_URL, proxies=proxies, timeout=(5, 5), verify=True)
             getSession = False
             logging.info("get New Session")
+            statics.set(stockName, sname, "NEW_SESSION")
         except BaseException as e:
             logging.error("get Session Exception :" + str(e))
+            statics.set(stockName, sname, "SESSION_ERROR")
             if not chkRun(0):
                 sys.exit(0)
-            time.sleep(10 * 60)
+            for i in range(10 * 60):
+                lookStop()
+                time.sleep(1)
 
 
 getNewSession()
 while run:
+    lookStop()
     sleep = 30  # 間隔30秒
+    lookStop()
     b = time.time()
     stock = twstock.realtime.get(stockCodeL, req, proxies, logging)
     # print(runGroupStr,stock["success"])
     if stock["success"]:
         logging.debug("    success")
         # 轉換格式
+        statics.set(stockName, sname, "SUCCESS")
         logcnt = 0
         for code, v in stock.items():
             logcnt = logcnt + 1
@@ -296,6 +321,7 @@ while run:
                 except BaseException as e:
                     logging.error("    BaseException :" + str(e))
     else:
+        statics.set(stockName, sname, "ERROR")
         logging.error("    realtime error: " + stock['rtmessage'])
         getNewSession()
         proxies = {"http": random.sample(proxList, k=1)[0]}

@@ -9,6 +9,8 @@ import logging
 import configparser
 config = configparser.ConfigParser()
 config.read('config.ini')
+statics = configparser.ConfigParser()
+statics.read('statics.ini')
 
 if config['stock']['logginglevel'] == 'DEBUG':
     level = logging.DEBUG
@@ -16,6 +18,12 @@ elif config['stock']['logginglevel'] == 'INFO':
     level = logging.INFO
 elif config['stock']['logginglevel'] == 'ERROR':
     level = logging.ERROR
+
+
+def writeIni():
+    with open('statics.ini', 'w') as staticsFile:
+        statics.write(staticsFile)
+
 
 logging.basicConfig(level=level,
                     format='%(asctime)s - %(levelname)s : %(funcName)s %(lineno)d : %(message)s',
@@ -29,10 +37,13 @@ stockList = ["01", "02", "03", "04", "05", "06", "08", "09", "10", "11", "12", "
 cmd = 'python ./stock.py TWSE "{}"'
 cwd = os.getcwd()  # Get the current working directory (cwd)
 files = os.listdir(cwd)  # Get all the files in that directory
-logging.debug("Files in '%s': %s" % (cwd, files))
+# logging.debug("Files in '%s': %s" % (cwd, files))
+statics['static']['enabled'] = 'True'
+writeIni()
 
 
 def runCom(L):
+    time.sleep(3)
     return subprocess.Popen(cmd.format(L), shell=True)
 
 
@@ -45,6 +56,7 @@ cmdTPEX = 'python ./stock.py TPEX "{}"'
 
 
 def runComTPEX(L):
+    time.sleep(3)
     return subprocess.Popen(cmdTPEX.format(L), shell=True)
 
 
@@ -55,27 +67,41 @@ p.extend(list(map(runComTPEX, stockListTPEX)))
 #     return open("/python/log/stock{}.log".format(L.replace("|", "_"), "a+"))
 #fp = list( map(logW, stockList))
 
+def showStatic(L):
+    print(statics['TWSE']['TW'+L])
 
-stop = len(stockList)
+
+def showTPStatic(L):
+    print(statics['TPEX']['TP'+L])
+
+
+all = len(stockList)+len(stockListTPEX)
+stop = all
 
 while stop > 0:
-    for i in range(len(stockList)):
+    inrun = 0
+    # map(showStatic, stockList)
+    # map(showTPStatic, stockListTPEX)
+    for i in range(len(stockList)+len(stockListTPEX)):
+        idx = i - 1
         # fp[i].write(p[i].stdout.readline())
-        p[i].poll()
-        logging.info(
-            str(i) + " code(" + str(p[i].pid) + ")=" + str(p[i].returncode))
-        if p[i].returncode == 0:
-            stop = stop - 1
-            p[i].kill
-        elif p[i].returncode == None:
+        p[idx].poll()
+        # logging.info(
+        #     str(i) + " code(" + str(p[i].pid) + ")=" + str(p[i].returncode))
+        if p[idx].returncode == 0:
+            p[idx].kill
+        elif p[idx].returncode == None:
             # p[i].poll()
+            inrun = inrun + 1
             None
-        elif p[i].returncode != 0:
-            p[i].kill
-            p[i] = subprocess.Popen(cmd.format(stockList[i]), shell=True)
+        elif p[idx].returncode != 0:
+            p[idx].kill
+            p[idx] = subprocess.Popen(cmd.format(stockList[idx]), shell=True)
 
-    time.sleep(60)
-    logging.info(stop)
+    stop = all - inrun
+    logging.info("have %s in run, %s in stop", inrun, stop)
+    time.sleep(5)
 
-for i in range(len(stockList)):
-    p[i].close()
+
+# for i in range(len(stockList)):
+#     p[i].close()
