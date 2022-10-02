@@ -76,9 +76,9 @@ def showTPStatic(L):
 
 
 all = len(stockList)+len(stockListTPEX)
-stop = all
+stop = 0
 
-while stop > 0:
+while stop < all:
     inrun = 0
     # map(showStatic, stockList)
     # map(showTPStatic, stockListTPEX)
