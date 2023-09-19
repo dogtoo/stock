@@ -1,0 +1,104 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Taiwan Stock Exchange OpenAPI",
+    "description": "This platform provides the Taiwan Stock Exchange service API, and you are welcome to use it. <br><br>[Terms of Use](https://www.twse.com.tw/zh/page/terms/use.html)",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://openapi.twse.com.tw/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "corporate"
+    },
+    {
+      "name": "trading"
+    },
+    {
+      "name": "statements"
+    },
+    {
+      "name": "index"
+    },
+    {
+      "name": "warrant"
+    },
+    {
+      "name": "others"
+    },
+    {
+      "name": "brokerage"
+    }
+  ],
+  "paths": {
+    "/exchangeReport/STOCK_DAY_ALL": {
+      "get": {
+        "tags": [
+          "trading"
+        ],
+        "summary": "Daily transaction information of listed stocks",
+        "description": "Daily transaction information of listed stocks",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Code": {
+                        "type": "string",
+                        "description": "證券代號"
+                      },
+                      "Name": {
+                        "type": "string",
+                        "description": "證券名稱"
+                      },
+                      "TradeVolume": {
+                        "type": "string",
+                        "description": "成交股數"
+                      },
+                      "TradeValue": {
+                        "type": "string",
+                        "description": "成交金額"
+                      },
+                      "OpeningPrice": {
+                        "type": "string",
+                        "description": "開盤價"
+                      },
+                      "HighestPrice": {
+                        "type": "string",
+                        "description": "最高價"
+                      },
+                      "LowestPrice": {
+                        "type": "string",
+                        "description": "最低價"
+                      },
+                      "ClosingPrice": {
+                        "type": "string",
+                        "description": "收盤價"
+                      },
+                      "Change": {
+                        "type": "string",
+                        "description": "漲跌價差"
+                      },
+                      "Transaction": {
+                        "type": "string",
+                        "description": "成交筆數"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
